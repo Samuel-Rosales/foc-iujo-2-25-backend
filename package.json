@@ -11,7 +11,7 @@
     "prisma:reset": "npx prisma migrate reset"
   },
   "keywords": [],
-  "author": "Samuel Rosales",
+  "author": "Samuel Rosales, Heracles Sánchez, Jesús Castillo",
   "license": "ISC",
   "description": "",
   "dependencies": {
