@@ -1,247 +1,187 @@
-## API 15112025
+#📦 API REST - Sistema de Gestión de InventarioEste repositorio contiene la implementación del Backend para el sistema de gestión de inventario, desarrollado bajo una arquitectura por capas estricta utilizando **Node.js**, **Express** y **Prisma ORM** con **PostgreSQL**.
 
-API REST construida con **Node.js** y **Express**, organizada por capas (`servidor`, `rutas`, `controladores`, `servicios`, `validators`). Utiliza **Prisma** como ORM para la gestión de base de datos con **PostgreSQL**. Actualmente expone endpoints CRUD completos para usuarios, roles y test, con validaciones implementadas usando **express-validator**.
+El proyecto cumple con los requisitos de utilizar **JavaScript (ES Modules)** puro sin TypeScript y sin Swagger, implementando validaciones robustas y manejo de claves foráneas.
 
----
+##📋 Descripción GeneralLa API expone endpoints CRUD completos para gestionar las entidades del negocio, organizadas por niveles de dependencia:
 
-## 🚀 Inicio Rápido
+* **Nivel 1:** Roles, Categorías, Almacenes (Sin dependencias).
+* **Nivel 2:** Usuarios, Áreas (Dependen de Nivel 1).
+* **Nivel 3:** Productos (Dependen de Nivel 2 y 1).
 
-### Primera vez (Setup inicial)
+Se implementa un **Soft Delete** (eliminación lógica) en todas las entidades y una estructura de respuesta JSON estandarizada obligatoria para la integración con el frontend.
 
-1. **Instalar dependencias**:
-```bash
+##🛠️ Tecnologías Requeridas* 
+**Node.js** (v18+) 
+
+
+* 
+**Express.js** - Framework web 
+
+
+* 
+**Prisma** - ORM para gestión de base de datos 
+
+
+* 
+**PostgreSQL** - Base de datos relacional 
+
+
+* 
+**express-validator** - Middleware de validaciones 
+
+
+* 
+**JavaScript (ES Modules)** - Lenguaje base 
+
+
+
+##🚀 Instalación y ConfiguraciónSigue estos pasos para levantar el proyecto localmente .
+
+###1. Clonar e Instalar```bash
+git clone <URL_DEL_REPOSITORIO>
+cd <NOMBRE_CARPETA>
 npm install
+
 ```
 
-2. **Configurar variables de entorno**:
-   - Copiar el archivo `.env.example` a `.env`:
-   ```bash
-   cp .env.example .env
-   ```
-   - Editar el archivo `.env` y ajustar las variables según tu configuración
-   - Ver sección "Variables de entorno" más abajo
+###2. Variables de EntornoCrea un archivo `.env` en la raíz del proyecto basándote en el ejemplo proporcionado:
 
-3. **Generar el cliente de Prisma**:
 ```bash
+cp .env.example .env
+
+```
+
+Edita el archivo `.env` con tus credenciales de PostgreSQL:
+
+```env
+API_PORT=3800
+DATABASE_URL="postgresql://usuario:password@localhost:5432/nombre_db?schema=public"
+
+```
+
+###3. Base de Datos (Prisma)Ejecuta las migraciones para crear las tablas en tu base de datos local:
+
+```bash
+# Generar el cliente de Prisma
 npm run prisma:generate
-```
 
-4. **Ejecutar migraciones**:
-```bash
+# Ejecutar migraciones (Crea tablas roles, users, products, etc.)
 npm run prisma:migrate
+
 ```
 
-5. **Iniciar en modo desarrollo**:
+###4. Ejecutar el Servidor* **Modo Desarrollo** (con recarga automática):
 ```bash
-npm run start:dev
+npm run dev
+
 ```
 
-La API estará disponible en `http://localhost:3800`
 
-### Comandos principales
-
-- **Desarrollo**: `npm run start:dev` (inicia la API con recarga automática)
-- **Producción**: `npm start` (inicia la API en modo producción)
-- **Prisma Studio**: `npm run prisma:studio` (visualizar datos en la BD)
-
----
-
-## Requisitos
-
-- **Node.js** >= 18
-- **npm** (incluido con Node)
-- **PostgreSQL** (puede ser local o remoto)
-- **Docker Desktop** (opcional, solo si usas Docker para PostgreSQL)
-
----
-
-## Instalación
-
-```bash
-npm install
-```
-
----
-
-## Ejecución
-
-- **Modo normal**:
-
+* **Modo Producción**:
 ```bash
 npm start
+
 ```
 
-- **Modo desarrollo** (con recarga automática vía `nodemon`):
 
-```bash
-npm run start:dev
-```
 
-El servidor se levantará por defecto en el puerto **3800** o en el que definas en la variable de entorno `API_PORT`.
+La API estará disponible en: `http://localhost:3800/api/v1`
 
-Ejemplo:
-
-```bash
-API_PORT=4000 npm start
-```
-
----
-
-## Estructura del proyecto
+##📂 Estructura del ProyectoEl proyecto sigue una arquitectura por capas estricta:
 
 ```text
 src/
-  app.js                # Punto de entrada: instancia y arranca el servidor
-  servidor/
-    server.js           # Configuración de Express, middlewares y registro de rutas
-  rutas/                # Definición de endpoints HTTP
-    users.rutas.js
-    roles.rutas.js
-    test.rutas.js
-  controladores/        # Lógica que maneja req/res y llama a servicios
-    users.controladores.js
-    roles.controladores.js
-    test.controladores.js
-  servicios/            # Lógica de negocio y acceso a datos con Prisma
-    users.servicios.js
-    roles.servicios.js
-    test.servicios.js
-  validators/           # Validaciones de entrada con express-validator
-    test.validator.js
-  middlewares/          # Middlewares personalizados
-    validate-fields.middleware.js
-  config/               # Configuraciones de la aplicación
-    prisma.config.js    # Cliente de Prisma
-  public/
-    index.html          # Recurso estático de ejemplo
+├── app.js                   # Configuración de Express
+├── servidor/
+│   └── server.js            # Punto de entrada y arranque del servidor
+├── config/
+│   └── prisma.config.js     # Instancia del cliente Prisma
+├── rutas/                   # Definición de endpoints
+│   ├── roles.rutas.js
+│   ├── categories.rutas.js
+│   ├── warehouses.rutas.js
+│   ├── users.rutas.js
+│   ├── areas.rutas.js
+│   └── products.rutas.js
+├── controladores/           # Manejo de peticiones HTTP (req, res)
+│   └── *.controladores.js
+├── servicios/               # Lógica de negocio y consultas a BD
+│   └── *.servicios.js
+├── validators/              # Reglas de validación (express-validator)
+│   └── *.validator.js
+└── middlewares/
+    └── validate-fields.middleware.js # Manejador de errores de validación
+
 ```
 
----
+##📡 Documentación de Endpoints**Regla Obligatoria:** Todos los endpoints retornan la siguiente estructura JSON:
 
-## Endpoints disponibles
+```json
+{
+  "message": "Descripción de la operación",
+  "data": { ... }
+}
 
-Suponiendo que el servidor corre en `http://localhost:3800` y el prefijo de API es `/api/v1`:
-
-### Test
-- `GET /api/v1/test` → Lista todos los registros de test
-- `GET /api/v1/test/:id` → Obtiene un registro por ID
-- `POST /api/v1/test` → Crea un nuevo registro (con validaciones)
-- `PUT /api/v1/test/:id` → Actualiza un registro existente (con validaciones)
-- `DELETE /api/v1/test/:id` → Elimina un registro (soft delete)
-
-### Roles
-- `GET /api/v1/roles` → Lista todos los roles
-- `GET /api/v1/roles/:id` → Obtiene un rol por ID
-- `POST /api/v1/roles` → Crea un nuevo rol
-- `PUT /api/v1/roles/:id` → Actualiza un rol existente
-- `DELETE /api/v1/roles/:id` → Elimina un rol (soft delete)
-
-### Users
-- `GET /api/v1/users` → Lista todos los usuarios
-- `GET /api/v1/users/:id` → Obtiene un usuario por ID
-- `POST /api/v1/users` → Crea un nuevo usuario
-- `PUT /api/v1/users/:id` → Actualiza un usuario existente
-- `DELETE /api/v1/users/:id` → Elimina un usuario (soft delete)
-
----
-
-## Configuración de Base de Datos
-
-La aplicación utiliza **Prisma** como ORM para conectarse a **PostgreSQL**. 
-
-**⚠️ IMPORTANTE**: Todas las tablas de la base de datos deben definirse en el archivo `prisma/schema.prisma`. Este archivo contiene la definición de todos los modelos usando la sintaxis de Prisma.
-
-### Variables de entorno
-
-1. **Copiar el archivo de ejemplo**:
-```bash
-cp .env.example .env
 ```
 
-2. **Editar el archivo `.env`** y ajustar las variables:
+*El código de estado HTTP (200, 201, 404, etc.) se envía en el encabezado, no en el cuerpo del JSON.*
 
-```env
-# Configuración de la API
-API_PORT=3800
+###1. Roles (Nivel 1)| Método | Endpoint | Descripción |
+| --- | --- | --- |
+| `GET` | `/api/v1/roles` | Listar todos los roles |
+| `GET` | `/api/v1/roles/:id` | Obtener rol por ID |
+| `POST` | `/api/v1/roles` | Crear rol (`name` único) |
+| `PUT` | `/api/v1/roles/:id` | Actualizar rol |
+| `DELETE` | `/api/v1/roles/:id` | Soft delete del rol |
 
-# Configuración de la Base de Datos
-DATABASE_URL="postgresql://usuario:password@localhost:5432/nombre_bd?schema=public"
-```
+###2. Categorías (Nivel 1)| Método | Endpoint | Descripción |
+| --- | --- | --- |
+| `GET` | `/api/v1/categories` | Listar categorías |
+| `POST` | `/api/v1/categories` | Crear categoría (`name` único) |
+| `PUT` | `/api/v1/categories/:id` | Actualizar categoría |
+| `DELETE` | `/api/v1/categories/:id` | Soft delete |
 
-**Nota**: Ajusta `usuario`, `password`, `localhost`, `5432` y `nombre_bd` según tu configuración de PostgreSQL.
+###3. Almacenes / Warehouses (Nivel 1)| Método | Endpoint | Descripción |
+| --- | --- | --- |
+| `GET` | `/api/v1/warehouses` | Listar almacenes |
+| `POST` | `/api/v1/warehouses` | Crear almacén (`name` único) |
+| `PUT` | `/api/v1/warehouses/:id` | Actualizar almacén |
+| `DELETE` | `/api/v1/warehouses/:id` | Soft delete |
 
-**Importante**: El archivo `.env` no debe subirse al repositorio (está en `.gitignore`). Solo el archivo `.env.example` se incluye como plantilla.
+###4. Usuarios / Users (Nivel 2)Depende de: `Roles`.
+| Método | Endpoint | Descripción |
+| :--- | :--- | :--- |
+| `GET` | `/api/v1/users` | Listar usuarios |
+| `POST` | `/api/v1/users` | Crear usuario (Requiere `role_id` válido) |
+| `PUT` | `/api/v1/users/:id` | Actualizar usuario |
+| `DELETE`| `/api/v1/users/:id` | Soft delete |
 
-### Configuración inicial (Primera vez)
+###5. Áreas (Nivel 2)Depende de: `Warehouses`.
+| Método | Endpoint | Descripción |
+| :--- | :--- | :--- |
+| `GET` | `/api/v1/areas` | Listar áreas (Incluye info de Warehouse) |
+| `POST` | `/api/v1/areas` | Crear área (Requiere `warehouse_id` válido) |
+| `PUT` | `/api/v1/areas/:id` | Actualizar área |
+| `DELETE`| `/api/v1/areas/:id` | Soft delete |
 
-1. **Asegúrate de tener PostgreSQL corriendo** (local o remoto)
+###6. Productos (Nivel 3)Depende de: `Categories` y `Areas`.
+| Método | Endpoint | Descripción |
+| :--- | :--- | :--- |
+| `GET` | `/api/v1/products` | Listar productos (Incluye categoría y área) |
+| `POST` | `/api/v1/products` | Crear producto (Requiere `category_id`, `area_id`) |
+| `PUT` | `/api/v1/products/:id`| Actualizar producto |
+| `DELETE`| `/api/v1/products/:id`| Soft delete |
 
-2. **Definir las tablas en Prisma**:
-   - Editar el archivo `prisma/schema.prisma`
-   - Agregar todos los modelos (tablas) necesarios
-   - Ver el modelo de datos en el `ENUNCIADO.md` para referencia
+Nota: Existe una restricción de unicidad compuesta: El nombre del producto debe ser único dentro de la misma área.
 
-3. **Generar el cliente de Prisma**:
-```bash
-npm run prisma:generate
-```
+##✅ ValidacionesSe utiliza `express-validator` en la capa de `validators/` para asegurar la integridad de los datos antes de llegar al controlador:
 
-4. **Ejecutar migraciones** (crea las tablas en la base de datos):
-```bash
-npm run prisma:migrate
-```
+* Campos requeridos y tipos de datos (String, Int, Email).
+* Validación de existencia de Claves Foráneas (`role_id`, `category_id`, etc.).
+* Validación de unicidad (Nombres y Emails).
 
-**Nota**: Cada vez que modifiques `prisma/schema.prisma`, debes ejecutar `npm run prisma:generate` y luego `npm run prisma:migrate` para aplicar los cambios.
-
-### Comandos útiles
-
-- **Abrir Prisma Studio** (visualizar datos):
-```bash
-npm run prisma:studio
-```
-
-- **Resetear la base de datos** (elimina todos los datos):
-```bash
-npm run prisma:reset
-```
-
-### Docker (Opcional)
-
-Si prefieres usar Docker para PostgreSQL, puedes usar `docker-compose.yml`:
-
-```bash
-# Levantar la base de datos
-docker compose up -d
-
-# Detener la base de datos
-docker compose down
-```
-
-**Nota**: Docker es opcional. Puedes usar cualquier instancia de PostgreSQL (local o remota).
-
-## Tecnologías utilizadas
-
-- **Node.js** - Entorno de ejecución
-- **Express.js** - Framework web
-- **Prisma** - ORM para PostgreSQL
-- **PostgreSQL** - Base de datos relacional
-- **express-validator** - Validaciones de entrada
-- **dotenv** - Gestión de variables de entorno
-
----
-
-## Scripts disponibles
-
-### Desarrollo
-
-- `npm run start:dev` → Arranca la API con `nodemon` para desarrollo (recarga automática)
-- `npm start` → Arranca la API en modo producción
-
-### Prisma
-
-- `npm run prisma:generate` → Genera el cliente de Prisma
-- `npm run prisma:migrate` → Ejecuta las migraciones de Prisma
-- `npm run prisma:studio` → Abre Prisma Studio para visualizar datos
-- `npm run prisma:reset` → Resetea la base de datos (elimina todos los datos)
-
-
+##📄 Scripts Disponibles* `npm run dev`: Inicia el servidor de desarrollo con Nodemon.
+* `npm start`: Inicia el servidor en modo producción.
+* `npm run prisma:generate`: Actualiza el cliente de Prisma si hay cambios en el schema.
+* `npm run prisma:migrate`: Aplica cambios de esquema a la base de datos SQL.
+* `npm run prisma:studio`: Abre una interfaz visual para explorar la base de datos.
