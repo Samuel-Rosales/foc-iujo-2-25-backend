@@ -1,0 +1,95 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// --- NIVEL 1: Tablas independientes --- [cite: 49]
+
+model Role {
+  id         Int       @id @default(autoincrement())
+  name       String    @unique
+  status     Boolean   @default(true)
+  deleted_at DateTime? // Requisito para soft delete 
+  users      User[]    // Relación inversa
+
+  @@map("roles") // Nombre exacto de tabla [cite: 50]
+}
+
+model Category {
+  id         Int       @id @default(autoincrement())
+  name       String    @unique
+  status     Boolean   @default(true)
+  deleted_at DateTime?
+  products   Product[]
+
+  @@map("categories") // [cite: 52]
+}
+
+model Warehouse {
+  id         Int       @id @default(autoincrement())
+  name       String    @unique
+  status     Boolean   @default(true)
+  deleted_at DateTime?
+  areas      Area[]
+
+  @@map("warehouses") // [cite: 54]
+}
+
+// --- NIVEL 2: Dependen de Nivel 1 --- [cite: 56]
+
+model User {
+  id         Int       @id @default(autoincrement())
+  name       String
+  email      String    @unique
+  password   String
+  role_id    Int       // Clave foránea [cite: 58]
+  status     Boolean   @default(true)
+  deleted_at DateTime?
+  
+  role       Role      @relation(fields: [role_id], references: [id])
+
+  @@map("users") // [cite: 57]
+}
+
+model Area {
+  id           Int       @id @default(autoincrement())
+  name         String    @unique
+  warehouse_id Int       // Clave foránea [cite: 69]
+  status       Boolean   @default(true)
+  deleted_at   DateTime?
+  
+  warehouse    Warehouse @relation(fields: [warehouse_id], references: [id])
+  products     Product[]
+
+  @@map("areas") // [cite: 59]
+}
+
+// --- NIVEL 3: Dependen de Nivel 2 --- [cite: 75]
+
+model Product {
+  id          Int       @id @default(autoincrement())
+  name        String
+  price       Float     // "number" en BD suele ser Float o Decimal para precios
+  quantity    Int
+  category_id Int       // Clave foránea a categories 
+  area_id     Int       // Clave foránea a areas 
+  status      Boolean   @default(true)
+  deleted_at  DateTime?
+
+  category    Category  @relation(fields: [category_id], references: [id])
+  area        Area      @relation(fields: [area_id], references: [id])
+
+  // Restricción única compuesta: El nombre debe ser único por área 
+  @@unique([name, area_id])
+  @@map("products") // [cite: 76]
+}

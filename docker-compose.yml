@@ -1,0 +1,12 @@
+services:
+  dbPostgres:
+    container_name: ${PG_CONTAINER_NAME}
+    image: postgres:15.1
+    volumes:
+      - ${PGDATA}
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      PGDATA: ${PGDATA}
+    ports:
+      - "${POSTGRES_PORT}:5432"
+   
