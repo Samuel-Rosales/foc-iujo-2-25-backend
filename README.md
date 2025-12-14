@@ -1,5 +1,7 @@
 #📦 API REST - Sistema de Gestión de InventarioEste repositorio contiene la implementación del Backend para el sistema de gestión de inventario, desarrollado bajo una arquitectura por capas estricta utilizando **Node.js**, **Express** y **Prisma ORM** con **PostgreSQL**.
 
+**Elaborado por**: Jesús Castillo, Heracles Sanchez, Samuel Rosales.
+
 El proyecto cumple con los requisitos de utilizar **JavaScript (ES Modules)** puro sin TypeScript y sin Swagger, implementando validaciones robustas y manejo de claves foráneas.
 
 ##📋 Descripción GeneralLa API expone endpoints CRUD completos para gestionar las entidades del negocio, organizadas por niveles de dependencia:
